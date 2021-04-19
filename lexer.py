@@ -179,6 +179,12 @@ def depthof(array):
 useless until I complete abstract syntax tree function'''
 
 
+def repl(l,a,b):
+    for i in range(len(l)):
+        if(l[i:i+len(a)] == a):
+            l[i:i+len(a)] = b
+    return l
+
 def create_ast(line):
     complexity = line.count('(')+line.count('[')+line.count('{')
     if line.strip()[0] == commentator:
@@ -252,10 +258,19 @@ def create_ast(line):
     '''Function definitions and calls are not identified by the code at that stage
     [CLASS_SEP] is not defined yet but a way of detecting it could be looking for
     [VARN][FLOAT_SEP][VARN] in norm and replacing the sequence with
-    [CLASS][CLASS_SEP][FUNCTION].'''
+    [CLASSN][CLASS_SEP][FUNCN]
+
+    Same thing can be done for function calls:
     
+    If  [VARN][LB_N] in array, it can simply be replaced with, [FUNCN][LB_N]
+    '''
+    norm = repl(norm,['[VARN]','[LB_N]'],['[FUNCN]','[LB_N]'])
+    
+    norm = repl(norm,['[VARN]','[FLOAT_SEP]','[VARN]'],['[CLASSN]','[CLASS_SEP]','[VARN]'])
+    norm = repl(norm,['[VARN]','[FLOAT_SEP]','[FUNCN]'],['[CLASSN]','[CLASS_SEP]','[FUNCN]'])
+
     return ast_arr,norm
          
 
-for i in create_ast('da*=(366.5-2)*4'):
+for i in create_ast('da*=a(366.5-2)*4+ab.ac(4,5)')[1]:
     print(i)
